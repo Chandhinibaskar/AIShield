@@ -1,0 +1,12 @@
+services:
+  db:
+    image: postgres:16
+    environment: { POSTGRES_USER: aishield, POSTGRES_PASSWORD: aishield, POSTGRES_DB: aishield }
+    volumes: ["./database/schema.sql:/docker-entrypoint-initdb.d/01.sql"]
+    ports: ["5432:5432"]
+  backend:
+    build: ./backend
+    env_file: .env.example
+    environment: { DATABASE_URL: "postgres://aishield:aishield@db:5432/aishield" }
+    ports: ["4000:4000"]
+    depends_on: [db]

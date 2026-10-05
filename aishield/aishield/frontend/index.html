@@ -1,0 +1,111 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>AIShield – Think Before You Click.</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>
+:root{--bg:#050816;--card:rgba(20,28,60,.6);--bd:rgba(120,150,255,.18);--tx:#e8ecff;--mu:#8e9ac4;--a:#3b82f6;--c:#22d3ee;--p:#a855f7;--r:#ef4444;--g:#22c55e;--y:#f59e0b;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#f3f6ff;--card:rgba(255,255,255,.8);--bd:rgba(60,90,200,.2);--tx:#0b1230;--mu:#51608f}}
+:root[data-theme="light"]{--bg:#f3f6ff;--card:rgba(255,255,255,.8);--bd:rgba(60,90,200,.2);--tx:#0b1230;--mu:#51608f}
+:root[data-theme="dark"]{--bg:#050816;--card:rgba(20,28,60,.6);--bd:rgba(120,150,255,.18);--tx:#e8ecff;--mu:#8e9ac4}
+html{scroll-padding-top:env(safe-area-inset-top,0px);scroll-behavior:smooth}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font-family:Inter,system-ui,sans-serif;transition:background .3s;
+background-image:linear-gradient(var(--bd) 1px,transparent 1px),linear-gradient(90deg,var(--bd) 1px,transparent 1px);background-size:48px 48px;overflow-x:hidden}
+nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:9;display:flex;justify-content:space-between;align-items:center;padding:14px 5vw;backdrop-filter:blur(14px);background:var(--card);border-bottom:1px solid var(--bd)}
+.logo{font-weight:800;font-size:20px}.logo b{background:linear-gradient(90deg,var(--c),var(--p));-webkit-background-clip:text;color:transparent}
+nav div{display:flex;gap:18px;align-items:center;font-size:14px;color:var(--mu)}nav a{color:inherit;text-decoration:none}@media(max-width:700px){nav .l{display:none}}
+button{font:inherit;cursor:pointer;border:0;border-radius:12px;padding:12px 20px;color:#fff;background:linear-gradient(90deg,var(--a),var(--p));box-shadow:0 0 24px rgba(99,102,241,.45);transition:.2s}button:hover{transform:translateY(-2px)}
+button.g{background:transparent;border:1px solid var(--bd);color:var(--tx);box-shadow:none}
+section{padding:70px 5vw;max-width:1100px;margin:auto}
+.hero{display:grid;grid-template-columns:1.1fr .9fr;gap:30px;align-items:center;min-height:80vh}@media(max-width:800px){.hero{grid-template-columns:1fr}}
+h1{font-size:clamp(40px,7vw,72px);line-height:1;margin:0 0 18px}h1 span{background:linear-gradient(90deg,var(--c),var(--p));-webkit-background-clip:text;color:transparent}
+p{color:var(--mu);line-height:1.6}.shield{position:relative;height:340px;display:grid;place-items:center}
+.shield svg{width:230px;filter:drop-shadow(0 0 30px var(--a));animation:fl 6s ease-in-out infinite}
+.ring{position:absolute;border:1px solid var(--c);border-radius:50%;opacity:.4;animation:sp 8s linear infinite}
+.ring:nth-child(1){width:280px;height:280px;border-style:dashed}.ring:nth-child(2){width:340px;height:340px;border-color:var(--p);animation-direction:reverse}
+.chip{position:absolute;padding:8px 12px;border-radius:12px;background:var(--card);border:1px solid var(--bd);font-size:12px;backdrop-filter:blur(8px);animation:fl 5s ease-in-out infinite}
+@keyframes fl{50%{transform:translateY(-12px)}}@keyframes sp{to{transform:rotate(360deg)}}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:18px;padding:22px;backdrop-filter:blur(12px)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}.grid .card{transition:.25s}.grid .card:hover{transform:translateY(-5px);border-color:var(--c);box-shadow:0 0 28px rgba(34,211,238,.18)}
+textarea{width:100%;min-height:100px;border-radius:12px;border:1px solid var(--bd);background:rgba(0,0,0,.25);color:var(--tx);padding:14px;font:inherit;resize:vertical}
+.ex{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}.ex button{padding:6px 12px;font-size:12px}
+.step{opacity:.35;padding:5px 0;font-size:14px}.step.on{opacity:1;color:var(--c)}.step.ok::before{content:"✓ ";color:var(--g)}
+.bar{height:6px;border-radius:9px;background:var(--bd);overflow:hidden}.bar i{display:block;height:100%;width:0;transition:width 1s}
+.score{font-size:64px;font-weight:800}.tag{display:inline-block;padding:3px 10px;border-radius:99px;font-size:12px;font-weight:700;color:#fff}
+.stats b{font-size:34px;display:block;background:linear-gradient(90deg,var(--c),var(--p));-webkit-background-clip:text;color:transparent}
+footer{text-align:center;padding:40px;color:var(--mu);border-top:1px solid var(--bd)}
+@media print{nav,section:not(#demo),footer,button,textarea,.ex{display:none!important}body{background:#fff;color:#000}}
+</style></head><body>
+<nav><span class="logo">🛡️ AI<b>Shield</b></span><div><a class="l" href="#features">Features</a><a class="l" href="#how">How It Works</a><a class="l" href="#threats">Threats</a><button class="g" id="th" style="padding:8px 12px">🌓</button><button class="g" onclick="location.href='app.html'">Sign In</button><button onclick="location.href='app.html'">Get Started</button></div></nav>
+<section class="hero"><div><p style="color:var(--c);letter-spacing:2px;font-size:13px">YOUR AI-POWERED DIGITAL SAFETY COPILOT</p><h1>Think Before <span>You Click.</span></h1>
+<p>AIShield uses intelligent threat analysis to detect phishing, scams, malicious links and digital fraud before they put you at risk.</p>
+<button onclick="document.getElementById('demo').scrollIntoView()">Scan a Threat</button> <button class="g" onclick="document.getElementById('features').scrollIntoView()">Explore AIShield</button></div>
+<div class="shield"><div class="ring"></div><div class="ring"></div>
+<svg viewBox="0 0 100 120"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#22d3ee"/><stop offset="1" stop-color="#a855f7"/></linearGradient></defs><path d="M50 4 94 20v36c0 30-20 50-44 60C26 106 6 86 6 56V20z" fill="rgba(20,28,60,.8)" stroke="url(#g)" stroke-width="3"/><rect x="34" y="52" width="32" height="26" rx="5" fill="url(#g)"/><path d="M40 52v-8a10 10 0 0 1 20 0v8" fill="none" stroke="url(#g)" stroke-width="4"/><circle cx="50" cy="65" r="4" fill="#050816"/></svg>
+<span class="chip" style="top:8%;left:0">🔴 Suspicious URL detected</span><span class="chip" style="top:30%;right:0;animation-delay:1s">✅ Phishing attempt blocked</span><span class="chip" style="bottom:18%;left:2%;animation-delay:2s">⚠️ QR threat detected</span><span class="chip" style="bottom:4%;right:6%;animation-delay:.5s">Risk Score: 92/100</span></div></section>
+<section id="demo"><h2 style="font-size:34px">See AIShield in Action</h2>
+<div class="card"><textarea id="in" placeholder="Paste a suspicious URL or message..."></textarea>
+<div class="ex"><button class="g" data-s="Your bank account will be blocked today. Verify immediately at http://secure-bank-login.xyz/verify">Bank phishing</button><button class="g" data-s="Congratulations! You won ₹50,000. Click to claim your prize.">Prize scam</button><button class="g" data-s="Your parcel could not be delivered. Pay ₹25 at http://bit.ly/3xYz">Delivery scam</button><button class="g" data-s="Meeting scheduled for 3 PM.">Safe message</button></div>
+<button id="go">Analyze Threat</button><p style="font-size:12px">🔒 AIShield analyzes submitted content to identify potential digital threats. Do not submit passwords, OTPs, private keys, or other highly sensitive information.</p>
+<div id="steps" hidden></div><div id="res" hidden></div></div></section>
+<section id="features"><h2 style="font-size:34px">Features</h2><div class="grid" id="fe"></div></section>
+<section id="how"><h2 style="font-size:34px">How It Works</h2><div class="grid" id="hw"></div></section>
+<section id="threats"><h2 style="font-size:34px">Threat Intelligence</h2><div class="grid" id="th2"></div></section>
+<section><div class="grid stats" id="st"></div><p style="text-align:center;font-size:12px">Statistics are simulated demo data.</p></section>
+<section style="text-align:center"><h2 style="font-size:34px">Don't let one click become a costly mistake.</h2><p>Check before you trust.</p><button onclick="location.href='app.html'">Start Protecting Yourself</button></section>
+<footer><b>AIShield</b> · Think Before You Click.<br>Privacy · Terms · Security · Contact</footer>
+<script>
+const $=s=>document.querySelector(s);
+const root=document.documentElement;try{const t=localStorage.getItem('t');if(t)root.dataset.theme=t}catch(e){}
+$('#th').onclick=()=>{const n=(root.dataset.theme||(matchMedia('(prefers-color-scheme:light)').matches?'light':'dark'))==='dark'?'light':'dark';root.dataset.theme=n;try{localStorage.setItem('t',n)}catch(e){}};
+const FE=[['🧠','AI Threat Detection','Analyze suspicious content with AI.'],['🎣','Phishing Detection','Spot malicious URLs.'],['💬','Scam Message Detection','Find fraud patterns in SMS.'],['🖼️','Screenshot Analysis','OCR + threat analysis.'],['🔳','QR Safety Scanner','Check QR codes before opening.'],['💡','Explainable AI','Know WHY it is dangerous.'],['📊','Risk Scoring','Signals → one 0–100 score.'],['🕘','Security History','Track every scan.']];
+$('#fe').innerHTML=FE.map(f=>`<div class="card"><div style="font-size:28px">${f[0]}</div><h3>${f[1]}</h3><p>${f[2]}</p></div>`).join('');
+$('#hw').innerHTML=[['Input','Submit URL, message, email, QR or screenshot.'],['AI Analysis','Content and threat indicators examined.'],['Risk Assessment','Signals combine into a risk score.'],['Protection','Explanation and safe actions.']].map((s,i)=>`<div class="card"><b style="color:var(--c)">0${i+1}</b><h3>${s[0]}</h3><p>${s[1]}</p></div>`).join('');
+$('#th2').innerHTML=[['Phishing','HIGH','Fake bank login page'],['Financial Scam','HIGH','"You won ₹50,000"'],['Fake Offers','MED','Free phone giveaway'],['Credential Theft','CRIT','"Enter your password to continue"'],['QR Scam','HIGH','Sticker QR on parking meter'],['Impersonation','HIGH','"Your CEO needs gift cards"']].map(t=>`<div class="card"><h3>${t[0]}</h3><span class="tag" style="background:${t[1]=='MED'?'var(--y)':'var(--r)'}">${t[1]}</span><p>e.g. ${t[2]}</p></div>`).join('');
+const ST=[['Threats Analyzed',24850,'+'],['Threats Detected',8420,'+'],['Users Protected',5200,'+'],['AI Accuracy',96.4,'%']];
+$('#st').innerHTML=ST.map((s,i)=>`<div class="card"><b data-i="${i}">0</b>${s[0]}</div>`).join('');
+new IntersectionObserver((e,o)=>e.forEach(x=>{if(!x.isIntersecting)return;o.unobserve(x.target);document.querySelectorAll('[data-i]').forEach(el=>{const [,v,u]=ST[el.dataset.i];let k=0;const t=setInterval(()=>{k+=.04;const n=v*Math.min(1,k);el.textContent=(v%1?n.toFixed(1):Math.round(n).toLocaleString())+u;if(k>=1)clearInterval(t)},30)})}),{threshold:.4}).observe($('#st'));
+// Client-side demo engine (mirrors backend/src/riskEngine.ts)
+function engine(x){const t=x.toLowerCase(),f=[];let s=0;const add=(c,n,l)=>{if(c){s+=n;f.push(l)}};
+const urlm=x.match(/(https?:\/\/\S+|\b[\w.-]+\.[a-z]{2,}\/\S*)/i);let host='';if(urlm){try{host=new URL(/^http/i.test(urlm[0])?urlm[0]:'http://'+urlm[0]).hostname}catch(e){}}
+add(/\b(urgent|immediately|today|blocked|suspended|expire|within 24)/.test(t),18,'Urgency manipulation');
+add(/\b(otp|password|pin|cvv|verify|kyc|login)/.test(t),24,'Credential harvesting');
+add(/(bank|refund|send money|transfer|prize|winner|won |₹|lottery|pay )/.test(t),22,'Financial request or lure');
+add(/(bit\.ly|tinyurl|cutt\.ly)|\.(xyz|top|tk|click)\b/.test(host+t),24,'Suspicious domain / shortener');
+add(/^\d+\.\d+\.\d+\.\d+$/.test(host),24,'IP-based URL');add(/http:\/\//.test(t),8,'No HTTPS');
+add(/(login|secure|verify)[\w-]*\./.test(host)||/-/.test(host)&&/bank|pay/.test(host),12,'Brand-like domain keywords');
+if(/^your otp is \d+\.?$/i.test(x.trim())){s=10;f.length=0}
+s=Math.min(99,s);if(x.length<40&&!f.length)s=Math.min(s,4);
+const cl=s>=80?['CRITICAL','var(--r)']:s>=60?['HIGH RISK','var(--r)']:s>=30?['SUSPICIOUS','var(--y)']:['SAFE','var(--g)'];
+const cat=s<30?'Safe':/prize|winner|won |lottery/.test(t)?'Financial Scam':/parcel|deliver/.test(t)?'Delivery Scam':/otp|verify|password|login|bank/.test(t)?'Phishing':'Suspicious Content';
+return{s,cl,cat,f,host,conf:Math.min(98,70+f.length*6)}}
+document.querySelectorAll('.ex button').forEach(b=>b.onclick=()=>{$('#in').value=b.dataset.s});
+$('#go').onclick=async()=>{const x=$('#in').value.trim();if(!x){$('#in').focus();return}
+const st=$('#steps'),res=$('#res');res.hidden=true;st.hidden=false;const S=['Checking URL structure','Checking domain signals','Checking suspicious patterns','Running AI analysis','Calculating risk score'];
+st.innerHTML=S.map(s=>`<div class="step">${s}</div>`).join('');const el=[...st.children];
+for(const e of el){e.classList.add('on');await new Promise(r=>setTimeout(r,450));e.classList.add('ok')}
+const r=engine(x);st.hidden=true;res.hidden=false;
+res.innerHTML=`<div style="display:grid;grid-template-columns:auto 1fr;gap:24px;align-items:center;margin-top:18px"><div><div class="score" style="color:${r.cl[1]}"><span id="n">0</span><small style="font-size:20px">/100</small></div><span class="tag" style="background:${r.cl[1]}">${r.cl[0]}</span></div>
+<div><b>Threat Type:</b> ${r.cat} · <b>Confidence:</b> ${r.conf}%<div class="bar" style="margin:10px 0"><i id="b" style="background:${r.cl[1]}"></i></div><small style="color:var(--c)">AIShield Demo Analysis (rule-based engine, no AI key configured)</small></div></div>
+<h4>Detected</h4>${r.f.length?r.f.map(f=>`<div>🔴 ${f}</div>`).join(''):'<div>✅ No scam patterns found</div>'}
+<h4>Why AIShield flagged this</h4><p>${r.f.length?r.f.map((f,i)=>`${i+1}. ${f}.`).join(' ')+' Scammers push you to act before you verify.':'No urgency, credential, or financial manipulation detected.'}</p>
+<h4>Recommended Actions</h4>${r.s>=30?'<div>❌ Do not click the link · ❌ Do not share OTP · ❌ Do not enter card details · ❌ Do not transfer money</div><div>✅ Verify the sender independently</div>':'<div>✅ Looks safe, stay alert</div>'}
+<p><button class="g" onclick="print()">Download Report (PDF)</button></p>`;
+setTimeout(()=>{$('#b').style.width=r.s+'%'},50);let k=0;const t=setInterval(()=>{k+=2;$('#n').textContent=Math.min(k,r.s);if(k>=r.s)clearInterval(t)},16)};
+</script><script>
+(function(){
+if(matchMedia('(prefers-reduced-motion:reduce)').matches)return;
+var low=innerWidth<700||(navigator.hardwareConcurrency||4)<=2;
+var c=document.createElement('canvas');c.setAttribute('aria-hidden','true');
+c.style.cssText='position:fixed;inset:0;width:100%;height:100%;z-index:-1;pointer-events:none';
+document.body.prepend(c);var x=c.getContext('2d'),W,H,D=Math.min(devicePixelRatio||1,2),N=low?24:60,P=[],scan=0,run=true;
+function rs(){W=c.width=innerWidth*D;H=c.height=innerHeight*D}rs();addEventListener('resize',rs);
+for(var i=0;i<N;i++)P.push({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.4*D,vy:(Math.random()-.5)*.4*D});
+function col(n,d){return getComputedStyle(document.documentElement).getPropertyValue(n).trim()||d}
+document.addEventListener('visibilitychange',function(){run=!document.hidden;if(run)f()});
+function f(){if(!run)return;x.clearRect(0,0,W,H);var a=col('--c','#22d3ee'),b=col('--p','#a855f7'),L=140*D;
+P.forEach(function(p){p.x+=p.vx;p.y+=p.vy;if(p.x<0||p.x>W)p.vx*=-1;if(p.y<0||p.y>H)p.vy*=-1});
+x.lineWidth=D;x.strokeStyle=a;
+for(var i=0;i<N;i++)for(var j=i+1;j<N;j++){var d=Math.hypot(P[i].x-P[j].x,P[i].y-P[j].y);if(d<L){x.globalAlpha=(1-d/L)*.35;x.beginPath();x.moveTo(P[i].x,P[i].y);x.lineTo(P[j].x,P[j].y);x.stroke()}}
+x.globalAlpha=.8;x.fillStyle=b;P.forEach(function(p){x.beginPath();x.arc(p.x,p.y,1.8*D,0,7);x.fill()});
+scan=(scan+1.2*D)%H;var g=x.createLinearGradient(0,scan-60*D,0,scan);g.addColorStop(0,'rgba(0,0,0,0)');g.addColorStop(1,a);
+x.globalAlpha=.12;x.fillStyle=g;x.fillRect(0,scan-60*D,W,60*D);requestAnimationFrame(f)}
+f()})();
+</script></body></html>

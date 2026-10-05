@@ -1,0 +1,96 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>AIShield – Think Before You Click.</title><link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27%3E%F0%9F%9B%A1%EF%B8%8F%3C/text%3E%3C/svg%3E"><meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+:root{--bg:#050816;--card:#0f1636;--bd:#26305f;--tx:#e8ecff;--mu:#8e9ac4;--c:#22d3ee;--p:#a855f7;--r:#ef4444;--g:#22c55e;--y:#f59e0b}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font-family:system-ui,sans-serif}
+header{display:flex;justify-content:space-between;align-items:center;padding:14px 5vw;border-bottom:1px solid var(--bd);background:var(--card)}
+.logo{font-weight:800;font-size:20px}.logo b{color:var(--c)}main{max-width:900px;margin:auto;padding:24px 5vw}
+.card{background:rgba(15,22,54,.82);backdrop-filter:blur(8px);border:1px solid var(--bd);border-radius:16px;padding:20px;margin-bottom:16px}
+input,textarea,select{width:100%;margin:6px 0;padding:11px;border-radius:10px;border:1px solid var(--bd);background:#0a0f2a;color:var(--tx);font:inherit}
+button{border:0;border-radius:10px;padding:11px 18px;color:#fff;background:linear-gradient(90deg,#3b82f6,var(--p));cursor:pointer;font:inherit}button.g{background:none;border:1px solid var(--bd)}button.on{border-color:var(--c);color:var(--c)}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}.err{color:var(--r);font-size:14px}.mu{color:var(--mu);font-size:13px}
+.score{font-size:56px;font-weight:800}.tag{padding:3px 10px;border-radius:99px;font-size:12px;font-weight:700;color:#fff}
+.bar{height:8px;background:var(--bd);border-radius:9px;overflow:hidden;margin:8px 0}.bar i{display:block;height:100%;transition:width 1s}
+table{width:100%;border-collapse:collapse;font-size:14px}td,th{padding:8px;border-bottom:1px solid var(--bd);text-align:left;max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.wrap{overflow-x:auto}.st{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px}.st div{text-align:center}.st b{font-size:28px;display:block}
+.step{opacity:.4;padding:3px 0}.step.on{opacity:1;color:var(--c)}
+</style></head><body>
+<header><a href="/" class="logo" style="text-decoration:none;color:inherit">🛡️ AI<b>Shield</b></a><span id="who" class="mu"></span><button class="g" id="out" hidden>Logout</button></header>
+<main id="login"><div class="card" style="max-width:400px;margin:40px auto"><h2 id="lt">Sign in</h2>
+<input id="nm" placeholder="Full name" hidden><input id="em" value="demo@aishield.ai" placeholder="Email"><input id="pw" type="password" value="Demo@12345" placeholder="Password">
+<div class="bar" id="meter" hidden><i id="mb" style="width:0"></i></div><p class="mu" id="ml" hidden>Use 8+ characters with an uppercase letter and a number.</p>
+<input id="pc" type="password" placeholder="Confirm password" hidden>
+<label class="mu" style="display:block;margin:6px 0"><input type="checkbox" id="sp" style="width:auto;margin-right:6px">Show password</label>
+<label class="mu" id="tl" style="display:block;margin:6px 0" hidden><input type="checkbox" id="tc" style="width:auto;margin-right:6px">I agree to the Terms and Privacy Policy</label>
+<p class="mu" id="dn">Demo account – for demonstration only.</p><p class="err" id="le"></p><button id="lb" style="width:100%">Sign In</button>
+<p class="mu" id="sw" style="text-align:center">Don't have an account? <a href="#" id="swl" style="color:var(--c)">Create one</a></p></div></main>
+<main id="app" hidden>
+<div class="card"><div class="st" id="stats"></div></div>
+<div class="card"><div class="tabs"><button class="on" data-t="message">Message</button><button class="g" data-t="url">URL</button><button class="g" data-t="email">Email</button></div>
+<div id="f"></div><p class="mu">🔒 Do not submit passwords, OTPs, private keys, or other highly sensitive information.</p><p class="err" id="se"></p><button id="sb">Analyze</button>
+<div id="prog"></div><div id="res"></div></div>
+<div class="card"><h3>Scan history</h3><select id="flt"><option value="">All</option><option>SAFE</option><option>SUSPICIOUS</option><option>HIGH RISK</option><option>CRITICAL</option></select><div class="wrap"><table id="hist"></table></div></div>
+</main>
+<script>
+const $=s=>document.querySelector(s);let tok=null,type='message',scans=[];
+try{tok=localStorage.getItem('tk')}catch(e){}
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+async function api(path,opt={}){try{const r=await fetch('/api'+path,{...opt,headers:{'Content-Type':'application/json',...(tok?{Authorization:'Bearer '+tok}:{})}});const d=await r.json().catch(()=>({}));if(r.status===401&&tok){logout();}if(!r.ok)throw new Error(d.error||'Request failed');return d}catch(e){throw new Error(e.message==='Failed to fetch'?'Cannot reach server. Is the backend running?':e.message)}}
+function logout(){tok=null;try{localStorage.removeItem('tk')}catch(e){}$('#app').hidden=true;$('#login').hidden=false;$('#out').hidden=true;$('#who').textContent=''}
+$('#out').onclick=logout;
+let mode='in';
+function setMode(m){mode=m;const u=m==='up';$('#lt').textContent=u?'Create account':'Sign in';['nm','pc','meter','ml','tl'].forEach(i=>$('#'+i).hidden=!u);$('#dn').hidden=u;$('#em').value=u?'':'demo@aishield.ai';$('#pw').value=u?'':'Demo@12345';$('#lb').textContent=u?'Create Account':'Sign In';$('#sw').innerHTML=u?'Already have an account? <a href="#" id="swl" style="color:var(--c)">Sign In</a>':'Don\'t have an account? <a href="#" id="swl" style="color:var(--c)">Create one</a>';$('#swl').onclick=e=>{e.preventDefault();setMode(u?'in':'up')};$('#le').textContent=''}
+$('#swl').onclick=e=>{e.preventDefault();setMode('up')};
+$('#sp').onchange=()=>{$('#pw').type=$('#pc').type=$('#sp').checked?'text':'password'};
+$('#pw').oninput=()=>{const p=$('#pw').value,n=[p.length>=8,/[A-Z]/.test(p),/[0-9]/.test(p),/[^A-Za-z0-9]/.test(p)].filter(Boolean).length;$('#mb').style.width=n*25+'%';$('#mb').style.background=['var(--r)','var(--r)','var(--y)','var(--c)','var(--g)'][n];$('#ml').textContent=p?['Weak','Weak','Fair','Good','Strong'][n]+' password – use 8+ characters with an uppercase letter and a number.':'Use 8+ characters with an uppercase letter and a number.'};
+$('#lb').onclick=async()=>{const u=mode==='up',le=$('#le');le.textContent='';const em=$('#em').value.trim(),pw=$('#pw').value;
+if(!/^\S+@\S+\.\S+$/.test(em)){le.textContent='Please enter a valid email address.';return}
+if(u){if(!$('#nm').value.trim()){le.textContent='Please enter your full name.';return}
+if(pw.length<8||!/[A-Z]/.test(pw)||!/[0-9]/.test(pw)){le.textContent='Password needs 8+ characters, an uppercase letter and a number.';return}
+if(pw!==$('#pc').value){le.textContent='Passwords do not match.';return}
+if(!$('#tc').checked){le.textContent='Please agree to the Terms and Privacy Policy.';return}}
+const b=$('#lb'),lab=b.textContent;b.textContent=u?'Creating account…':'Signing in…';b.disabled=true;
+try{const d=await api(u?'/auth/register':'/auth/login',{method:'POST',body:JSON.stringify(u?{name:$('#nm').value.trim(),email:em,password:pw}:{email:em,password:pw})});
+tok=d.token;try{localStorage.setItem('tk',tok)}catch(e){}$('#who').textContent=d.user.name;if(u){b.textContent='✓ Account created';await new Promise(r=>setTimeout(r,700))}start()}catch(e){le.textContent=e.message}
+b.disabled=false;b.textContent=lab};
+async function start(){$('#login').hidden=true;$('#app').hidden=false;$('#out').hidden=false;form();await load()}
+function form(){$('#f').innerHTML=type==='url'?'<input id="i1" placeholder="Enter website URL, e.g. http://secure-bank-login.xyz/verify">':type==='email'?'<input id="i0" placeholder="From"><input id="i2" placeholder="Subject"><textarea id="i1" rows="5" placeholder="Email body"></textarea>':'<textarea id="i1" rows="4" placeholder="Paste suspicious message here... Congratulations! You won ₹50,000..."></textarea>'}
+document.querySelectorAll('[data-t]').forEach(b=>b.onclick=()=>{type=b.dataset.t;document.querySelectorAll('[data-t]').forEach(x=>x.className=x===b?'on':'g');form();$('#res').innerHTML=''});
+const col=c=>c==='SAFE'?'var(--g)':c==='SUSPICIOUS'?'var(--y)':'var(--r)';
+function show(r,demo){const a=r.analysis||{},ind=r.indicators||a.indicators||[],rec=r.recommendations||[],ex=a.explanation||'';
+$('#res').innerHTML=`<hr style="border-color:var(--bd)"><div class="score" style="color:${col(r.classification||r.classification)}">${r.riskScore??r.risk_score}<small style="font-size:18px">/100</small></div><span class="tag" style="background:${col(r.classification)}">${esc(r.classification)}</span> <b>${esc(r.threatCategory??r.threat_category)}</b> <span class="mu">· Confidence ${r.confidence}%</span>
+<div class="bar"><i style="width:0;background:${col(r.classification)}" id="bb"></i></div><p class="mu">${esc(a.provider||r.provider||'AIShield Demo Analysis')}</p>
+<h4>Detected indicators</h4>${ind.length?ind.map(x=>'<div>🔴 '+esc(x)+'</div>').join(''):'<div>✅ None</div>'}<h4>Why AIShield flagged this</h4><p>${esc(ex)}</p><h4>Recommended actions</h4>${rec.map(x=>'<div>'+(r.riskScore>=30||r.risk_score>=30?'❌ ':'✅ ')+esc(x)+'</div>').join('')}
+<p><button class="g" onclick="window.print()">Download Report</button></p>`;setTimeout(()=>{const b=$('#bb');if(b)b.style.width=(r.riskScore??r.risk_score)+'%'},50)}
+$('#sb').onclick=async()=>{$('#se').textContent='';let body;const v=$('#i1').value.trim();if(!v){$('#se').textContent='Please enter something to scan.';return}
+body=type==='email'?`From: ${$('#i0').value}\nSubject: ${$('#i2').value}\n${v}`:v;
+const S=['Checking structure','Checking signals','Checking patterns','Running AI analysis','Calculating risk'];$('#res').innerHTML='';
+for(const s of S){$('#prog').innerHTML=`<div class="step on">⏳ ${s}…</div>`;await new Promise(r=>setTimeout(r,350))}$('#prog').innerHTML='';
+try{const r=await api('/scan/'+type,{method:'POST',body:JSON.stringify({input:body})});show(r);await load()}catch(e){$('#se').textContent=e.message}};
+async function load(){try{scans=await api('/scans');draw()}catch(e){}}
+$('#flt').onchange=draw;
+function draw(){const f=$('#flt').value,l=scans.filter(s=>!f||s.classification===f);
+const n=k=>scans.filter(s=>s.classification===k).length;
+$('#stats').innerHTML=`<div><b>${scans.length}</b><span class="mu">Total scans</span></div><div><b>${scans.length-n('SAFE')}</b><span class="mu">Threats</span></div><div><b>${n('HIGH RISK')+n('CRITICAL')}</b><span class="mu">High risk</span></div><div><b>${n('SAFE')}</b><span class="mu">Safe</span></div>`;
+$('#hist').innerHTML='<tr><th>Date</th><th>Type</th><th>Content</th><th>Threat</th><th>Score</th><th>Status</th><th></th></tr>'+l.map(s=>`<tr><td>${new Date(s.created_at).toLocaleDateString()}</td><td>${esc(s.type)}</td><td title="${esc(s.input)}">${esc(s.input)}</td><td>${esc(s.threat_category)}</td><td>${s.risk_score}</td><td style="color:${col(s.classification)}">${esc(s.classification)}</td><td><button class="g" data-d="${s.id}" style="padding:4px 10px">Delete</button></td></tr>`).join('')||'<tr><td colspan=7>No scans yet</td></tr>';
+document.querySelectorAll('[data-d]').forEach(b=>b.onclick=async()=>{await api('/scans/'+b.dataset.d,{method:'DELETE'});load()})}
+if(tok){api('/auth/me').then(u=>{$('#who').textContent=u.name;start()}).catch(()=>{})}
+</script><script>
+(function(){
+if(matchMedia('(prefers-reduced-motion:reduce)').matches)return;
+var low=innerWidth<700||(navigator.hardwareConcurrency||4)<=2;
+var c=document.createElement('canvas');c.setAttribute('aria-hidden','true');
+c.style.cssText='position:fixed;inset:0;width:100%;height:100%;z-index:-1;pointer-events:none';
+document.body.prepend(c);var x=c.getContext('2d'),W,H,D=Math.min(devicePixelRatio||1,2),N=low?24:60,P=[],scan=0,run=true;
+function rs(){W=c.width=innerWidth*D;H=c.height=innerHeight*D}rs();addEventListener('resize',rs);
+for(var i=0;i<N;i++)P.push({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.4*D,vy:(Math.random()-.5)*.4*D});
+function col(n,d){return getComputedStyle(document.documentElement).getPropertyValue(n).trim()||d}
+document.addEventListener('visibilitychange',function(){run=!document.hidden;if(run)f()});
+function f(){if(!run)return;x.clearRect(0,0,W,H);var a=col('--c','#22d3ee'),b=col('--p','#a855f7'),L=140*D;
+P.forEach(function(p){p.x+=p.vx;p.y+=p.vy;if(p.x<0||p.x>W)p.vx*=-1;if(p.y<0||p.y>H)p.vy*=-1});
+x.lineWidth=D;x.strokeStyle=a;
+for(var i=0;i<N;i++)for(var j=i+1;j<N;j++){var d=Math.hypot(P[i].x-P[j].x,P[i].y-P[j].y);if(d<L){x.globalAlpha=(1-d/L)*.35;x.beginPath();x.moveTo(P[i].x,P[i].y);x.lineTo(P[j].x,P[j].y);x.stroke()}}
+x.globalAlpha=.8;x.fillStyle=b;P.forEach(function(p){x.beginPath();x.arc(p.x,p.y,1.8*D,0,7);x.fill()});
+scan=(scan+1.2*D)%H;var g=x.createLinearGradient(0,scan-60*D,0,scan);g.addColorStop(0,'rgba(0,0,0,0)');g.addColorStop(1,a);
+x.globalAlpha=.12;x.fillStyle=g;x.fillRect(0,scan-60*D,W,60*D);requestAnimationFrame(f)}
+f()})();
+</script></body></html>
